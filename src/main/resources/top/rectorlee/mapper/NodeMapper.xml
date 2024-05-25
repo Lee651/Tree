@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="top.rectorlee.mapper.NodeMapper">
+    <select id="selectAllNode" resultType="top.rectorlee.entity.Node">
+        select
+            p.code id,
+            p.name name,
+            '0' pId
+        from
+            province p
+        union all
+        select
+            c.code id,
+            c.name name,
+            c.provinceCode pId
+        from
+            city c
+        union all
+        select
+            a.code id,
+            a.name name,
+            a.cityCode pId
+        from
+            area a
+        union all
+        select
+            s.code id,
+            s.name name,
+            s.areaCode pId
+        from
+            street s
+        union all
+        select
+            v.code id,
+            v.name name,
+            v.streetCode pId
+        from
+            village v
+    </select>
+
+    <select id="getAllProvince" resultType="top.rectorlee.entity.Node">
+        select
+            p.code id,
+            p.name name,
+            '0' pId
+        from
+            province p
+    </select>
+
+    <select id="getSubByPid" resultType="top.rectorlee.entity.Node">
+        <choose>
+            <when test="level == 1">
+                select
+                    c.code id,
+                    c.name name,
+                    c.provinceCode pId
+                from
+                    city c
+                where
+                    c.provinceCode = #{pId};
+            </when>
+            <when test="level == 2">
+                select
+                    a.code id,
+                    a.name name,
+                    a.cityCode pId
+                from
+                    area a
+                where
+                    a.cityCode = #{pId};
+            </when>
+            <when test="level == 3">
+                select
+                    s.code id,
+                    s.name name,
+                    s.areaCode pId
+                from
+                    street s
+                where
+                    s.areaCode = #{pId};
+            </when>
+            <otherwise>
+                select
+                    v.code id,
+                    v.name name,
+                    v.streetCode pId
+                from
+                    village v
+                where
+                    v.streetCode = #{pId};
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="buildTree" parameterType="string" resultType="top.rectorlee.entity.Node">
+        <choose>
+            <when test="id.length == 2">
+                select
+                    p.code id,
+                    p.name name,
+                    '0' pId
+                from
+                    province p
+                where
+                    p.code = #{id};
+            </when>
+            <when test="id.length == 4">
+                select
+                    c.code id,
+                    c.name name,
+                    c.provinceCode pId
+                from
+                    city c
+                where
+                    c.code = #{id};
+            </when>
+            <when test="id.length == 6">
+                select
+                    a.code id,
+                    a.name name,
+                    a.cityCode pId
+                from
+                    area a
+                where
+                    a.code = #{id};
+            </when>
+            <when test="id.length == 9">
+                select
+                    s.code id,
+                    s.name name,
+                    s.areaCode pId
+                from
+                    street s
+                where
+                    s.code = #{id};
+            </when>
+            <otherwise>
+                select
+                    v.code id,
+                    v.name name,
+                    v.streetCode pId
+                from
+                    village v
+                where
+                    v.code = #{item};
+            </otherwise>
+        </choose>
+    </select>
+</mapper>
